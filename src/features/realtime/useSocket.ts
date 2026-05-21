@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { getSocket } from '@/lib/socket';
-import { SOCKET_EVENTS } from '@/lib/constants';
 
-export const useSocket = (event: string, callback: (data: any) => void) => {
+
+export const useSocket = <T,>(event: string, callback: (data: T) => void) => {
   useEffect(() => {
     const socket = getSocket();
     
