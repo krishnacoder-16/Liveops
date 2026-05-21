@@ -3,22 +3,24 @@
 import { useEffect } from 'react';
 import { getSocket } from '@/lib/socket';
 import { useTicketStore } from '@/store/useTicketStore';
+import { useActivityStore } from '@/store/useActivityStore';
 import { Ticket } from '@/features/tickets/types';
 
 export const TicketSocketManager = () => {
   const { addTicket, updateTicket } = useTicketStore();
+  const { addActivity } = useActivityStore();
 
   useEffect(() => {
     const socket = getSocket();
 
     const handleTicketCreated = (ticket: Ticket) => {
-      console.log('Received ticket_created', ticket);
       addTicket(ticket);
+      addActivity({ message: `Ticket ${ticket.id} created`, type: 'created' });
     };
 
     const handleTicketUpdated = (ticket: Partial<Ticket> & { id: string }) => {
-      console.log('Received ticket_updated', ticket);
       updateTicket(ticket.id, ticket);
+      addActivity({ message: `Ticket ${ticket.id} updated`, type: 'updated' });
     };
 
     socket.on('ticket:created', handleTicketCreated);
@@ -28,7 +30,7 @@ export const TicketSocketManager = () => {
       socket.off('ticket:created', handleTicketCreated);
       socket.off('ticket:updated', handleTicketUpdated);
     };
-  }, [addTicket, updateTicket]);
+  }, [addTicket, updateTicket, addActivity]);
 
   return null; // Invisible component
 };

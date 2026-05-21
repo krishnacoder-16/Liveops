@@ -36,7 +36,7 @@ export const LiveTicketBoard = () => {
         </div>
         <button 
           onClick={simulateNewTicket}
-          className="flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white px-3 py-1.5 rounded-md text-sm font-medium shadow-sm transition-all active:scale-95"
+          className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md text-sm font-semibold shadow-sm transition-all hover:shadow-md active:scale-95"
         >
           <PlusIcon className="w-4 h-4" />
           Inject Test Ticket
@@ -49,12 +49,12 @@ export const LiveTicketBoard = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-50/80 border-b border-slate-200 text-xs uppercase tracking-wider text-slate-500 font-semibold">
-                <th className="px-6 py-3 font-medium">Ticket ID</th>
-                <th className="px-6 py-3 font-medium">Customer</th>
-                <th className="px-6 py-3 font-medium">Issue Type</th>
-                <th className="px-6 py-3 font-medium">Priority</th>
-                <th className="px-6 py-3 font-medium text-right">Status</th>
+              <tr className="bg-slate-50/80 border-b border-slate-200 text-xs uppercase tracking-wider text-slate-500 font-bold">
+                <th className="px-5 py-3 font-semibold">Ticket ID</th>
+                <th className="px-5 py-3 font-semibold">Customer</th>
+                <th className="px-5 py-3 font-semibold">Issue Type</th>
+                <th className="px-5 py-3 font-semibold">Priority</th>
+                <th className="px-5 py-3 font-semibold text-right">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
