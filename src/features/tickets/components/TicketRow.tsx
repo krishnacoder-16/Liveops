@@ -1,7 +1,9 @@
 import { Ticket } from '@/features/tickets/types';
 import { TicketStatusBadge } from './TicketStatusBadge';
-import { ClockIcon, UserIcon } from 'lucide-react';
+import { ClockIcon, UserIcon, LockIcon, Edit2Icon } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useRealtimeStore } from '@/store/useRealtimeStore';
+import { getSocket } from '@/lib/socket';
 
 interface TicketRowProps {
   ticket: Ticket;
@@ -10,6 +12,16 @@ interface TicketRowProps {
 export const TicketRow = ({ ticket }: TicketRowProps) => {
   const timeString = new Date(ticket.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   const isCritical = ticket.priority === 'critical' && ticket.status !== 'resolved';
+  const { agentName } = useRealtimeStore();
+
+  const handleLockTicket = () => {
+    if (ticket.isLocked) return;
+    const socket = getSocket();
+    socket.emit('ticket:lock', { ticketId: ticket.id, agentName });
+  };
+
+  const isLockedByMe = ticket.isLocked && ticket.lockedBy === agentName;
+  const isLockedByOther = ticket.isLocked && !isLockedByMe;
 
   return (
     <motion.tr 
@@ -17,8 +29,10 @@ export const TicketRow = ({ ticket }: TicketRowProps) => {
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
-      className={`hover:bg-slate-50 hover:-translate-y-[1px] hover:shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] transition-all duration-200 border-b border-slate-100 last:border-0 group relative z-0 hover:z-10 bg-white ${
-        isCritical ? 'bg-red-50/20 hover:bg-red-50/40' : ''
+      className={`hover:-translate-y-[1px] hover:shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] transition-all duration-200 border-b border-slate-100 last:border-0 group relative z-0 hover:z-10 ${
+        isLockedByOther ? 'bg-slate-50/50 grayscale-[20%] opacity-80' : 'bg-white hover:bg-slate-50'
+      } ${
+        isCritical && !isLockedByOther ? 'bg-red-50/20 hover:bg-red-50/40' : ''
       }`}
     >
       <td className="px-5 py-3 whitespace-nowrap relative">
@@ -50,8 +64,29 @@ export const TicketRow = ({ ticket }: TicketRowProps) => {
       <td className="px-5 py-3 whitespace-nowrap">
         <TicketStatusBadge priority={ticket.priority} />
       </td>
-      <td className="px-5 py-3 whitespace-nowrap text-right">
-        <TicketStatusBadge status={ticket.status} />
+      <td className="px-5 py-3 whitespace-nowrap">
+        <div className="flex items-center justify-end gap-3">
+          <TicketStatusBadge status={ticket.status} />
+          <div className="w-px h-4 bg-slate-200"></div>
+          {ticket.isLocked ? (
+            <div className="flex items-center justify-end text-slate-500 w-28">
+              <span className="text-[11px] font-semibold bg-slate-100 px-2 py-1 rounded-md border border-slate-200 flex items-center shadow-sm whitespace-nowrap">
+                <LockIcon className="w-3 h-3 mr-1.5" />
+                {ticket.lockedBy}
+              </span>
+            </div>
+          ) : (
+            <div className="w-28 flex justify-end">
+              <button 
+                onClick={handleLockTicket}
+                className="opacity-0 group-hover:opacity-100 transition-opacity bg-white border border-slate-200 hover:border-blue-400 hover:text-blue-600 text-slate-600 px-3 py-1 rounded-md text-xs font-semibold flex items-center shadow-sm"
+              >
+                <Edit2Icon className="w-3.5 h-3.5 mr-1" />
+                Edit
+              </button>
+            </div>
+          )}
+        </div>
       </td>
     </motion.tr>
   );

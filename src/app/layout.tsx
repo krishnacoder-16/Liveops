@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { SocketProvider } from "@/features/realtime/SocketProvider";
+import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,6 +22,7 @@ export default function RootLayout({
         <SocketProvider>
           {children}
         </SocketProvider>
+        <Toaster richColors position="bottom-right" />
       </body>
     </html>
   );

@@ -8,6 +8,9 @@ export interface Ticket {
   priority: TicketPriority;
   status: TicketStatus;
   createdAt: string; // ISO String
+  isLocked?: boolean;
+  lockedBy?: string;
+  lockedBySocketId?: string;
 }
 
 export const MOCK_TICKETS: Ticket[] = [
