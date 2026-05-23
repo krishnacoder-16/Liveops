@@ -60,8 +60,44 @@ io.on('connection', (socket) => {
     });
   });
 
+  socket.on('ticket:unlock', ({ ticketId }) => {
+    console.log(`Unlock request from (${socket.id}) for ticket ${ticketId}`);
+    
+    if (ticketLocks.has(ticketId)) {
+      const lockInfo = ticketLocks.get(ticketId);
+      
+      // Validate ownership
+      if (lockInfo.socketId === socket.id) {
+        ticketLocks.delete(ticketId);
+        
+        io.emit('ticket:unlocked', {
+          ticketId,
+          releasedBy: lockInfo.agentName
+        });
+        console.log(`Ticket ${ticketId} successfully unlocked by ${lockInfo.agentName}`);
+      } else {
+        console.warn(`Unauthorized unlock attempt on ${ticketId} by socket ${socket.id}`);
+      }
+    }
+  });
+
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);
+    
+    // Ghost lock cleanup
+    for (const [ticketId, lockInfo] of ticketLocks.entries()) {
+      if (lockInfo.socketId === socket.id) {
+        console.log(`Auto-releasing ghost lock for ticket ${ticketId} (owned by disconnected socket ${socket.id})`);
+        ticketLocks.delete(ticketId);
+        
+        // Broadcast the unlock event
+        io.emit('ticket:unlocked', {
+          ticketId,
+          releasedBy: lockInfo.agentName,
+          autoReleased: true
+        });
+      }
+    }
   });
 });
 

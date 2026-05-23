@@ -1,6 +1,6 @@
 import { Ticket } from '@/features/tickets/types';
 import { TicketStatusBadge } from './TicketStatusBadge';
-import { ClockIcon, UserIcon, LockIcon, Edit2Icon } from 'lucide-react';
+import { ClockIcon, UserIcon, LockIcon, Edit2Icon, UnlockIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useRealtimeStore } from '@/store/useRealtimeStore';
 import { getSocket } from '@/lib/socket';
@@ -18,6 +18,12 @@ export const TicketRow = ({ ticket }: TicketRowProps) => {
     if (ticket.isLocked) return;
     const socket = getSocket();
     socket.emit('ticket:lock', { ticketId: ticket.id, agentName });
+  };
+
+  const handleUnlockTicket = () => {
+    if (!ticket.isLocked) return;
+    const socket = getSocket();
+    socket.emit('ticket:unlock', { ticketId: ticket.id });
   };
 
   const isLockedByMe = ticket.isLocked && ticket.lockedBy === agentName;
@@ -68,7 +74,17 @@ export const TicketRow = ({ ticket }: TicketRowProps) => {
         <div className="flex items-center justify-end gap-3">
           <TicketStatusBadge status={ticket.status} />
           <div className="w-px h-4 bg-slate-200"></div>
-          {ticket.isLocked ? (
+          {isLockedByMe ? (
+            <div className="w-28 flex justify-end">
+              <button 
+                onClick={handleUnlockTicket}
+                className="bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 hover:border-emerald-300 text-emerald-700 px-3 py-1 rounded-md text-xs font-semibold flex items-center shadow-sm transition-colors"
+              >
+                <UnlockIcon className="w-3.5 h-3.5 mr-1" />
+                Release Lock
+              </button>
+            </div>
+          ) : ticket.isLocked ? (
             <div className="flex items-center justify-end text-slate-500 w-28">
               <span className="text-[11px] font-semibold bg-slate-100 px-2 py-1 rounded-md border border-slate-200 flex items-center shadow-sm whitespace-nowrap">
                 <LockIcon className="w-3 h-3 mr-1.5" />

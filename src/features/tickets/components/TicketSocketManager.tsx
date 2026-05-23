@@ -19,6 +19,12 @@ interface TicketLockFailedPayload {
   attemptedBy: string;
 }
 
+interface TicketUnlockedPayload {
+  ticketId: string;
+  releasedBy?: string;
+  autoReleased?: boolean;
+}
+
 export const TicketSocketManager = () => {
   const { addTicket, updateTicket } = useTicketStore();
   const { addActivity } = useActivityStore();
@@ -47,16 +53,28 @@ export const TicketSocketManager = () => {
       toast.error(`Ticket ${ticketId} is already locked by ${lockedBy}`);
     };
 
+    const handleTicketUnlocked = ({ ticketId, releasedBy, autoReleased }: TicketUnlockedPayload) => {
+      updateTicket(ticketId, { isLocked: false, lockedBy: undefined, lockedBySocketId: undefined });
+      
+      if (autoReleased) {
+        addActivity({ message: `Lock auto-released for Ticket ${ticketId} (disconnect)`, type: 'system' });
+      } else {
+        addActivity({ message: `${releasedBy} released Ticket ${ticketId}`, type: 'system' });
+      }
+    };
+
     socket.on('ticket:created', handleTicketCreated);
     socket.on('ticket:updated', handleTicketUpdated);
     socket.on('ticket:locked', handleTicketLocked);
     socket.on('ticket:lock_failed', handleTicketLockFailed);
+    socket.on('ticket:unlocked', handleTicketUnlocked);
 
     return () => {
       socket.off('ticket:created', handleTicketCreated);
       socket.off('ticket:updated', handleTicketUpdated);
       socket.off('ticket:locked', handleTicketLocked);
       socket.off('ticket:lock_failed', handleTicketLockFailed);
+      socket.off('ticket:unlocked', handleTicketUnlocked);
     };
   }, [addTicket, updateTicket, addActivity]);
 
