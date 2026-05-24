@@ -6,6 +6,11 @@ import cors from 'cors';
 const app = express();
 app.use(cors());
 
+// Health check route so the browser doesn't show "Cannot GET /"
+app.get('/', (req, res) => {
+  res.json({ status: 'ok', message: 'Live Ops WebSocket Server is running' });
+});
+
 const server = createServer(app);
 
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
