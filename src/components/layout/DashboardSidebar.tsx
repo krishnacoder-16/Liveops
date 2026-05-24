@@ -1,14 +1,18 @@
+'use client';
+
 import { ActivityIcon, BarChart2Icon, LayoutDashboardIcon, SettingsIcon, TicketIcon, UsersIcon } from 'lucide-react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 const NAV_ITEMS = [
-  { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboardIcon, active: true },
-  { label: 'Tickets', href: '#', icon: TicketIcon },
-  { label: 'Active Agents', href: '#', icon: UsersIcon },
-  { label: 'Analytics', href: '#', icon: BarChart2Icon },
+  { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboardIcon },
+  { label: 'Tickets', href: '/dashboard/tickets', icon: TicketIcon },
+  { label: 'Active Agents', href: '/dashboard/active-agents', icon: UsersIcon },
+  { label: 'Analytics', href: '/dashboard/analytics', icon: BarChart2Icon },
 ];
 
 export const DashboardSidebar = () => {
+  const pathname = usePathname();
   return (
     <aside className="w-64 bg-slate-950 text-slate-300 flex flex-col h-screen fixed top-0 left-0 border-r border-slate-900 z-10">
       <div className="h-16 flex items-center px-6 border-b border-slate-900">
@@ -26,17 +30,18 @@ export const DashboardSidebar = () => {
         </div>
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
+          const isActive = pathname === item.href;
           return (
             <Link
               key={item.label}
               href={item.href}
               className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sm font-medium ${
-                item.active 
+                isActive 
                   ? 'bg-slate-900 text-white' 
                   : 'hover:bg-slate-900/50 hover:text-slate-100'
               }`}
             >
-              <Icon className={`w-4 h-4 ${item.active ? 'text-blue-500' : 'text-slate-500'}`} />
+              <Icon className={`w-4 h-4 ${isActive ? 'text-blue-500' : 'text-slate-500'}`} />
               {item.label}
             </Link>
           );
