@@ -3,6 +3,7 @@ import { TicketStatusBadge } from './TicketStatusBadge';
 import { ClockIcon, UserIcon, LockIcon, Edit2Icon, UnlockIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useRealtimeStore } from '@/store/useRealtimeStore';
+import { useUiStore } from '@/store/useUiStore';
 import { getSocket } from '@/lib/socket';
 
 interface TicketRowProps {
@@ -13,6 +14,7 @@ export const TicketRow = ({ ticket }: TicketRowProps) => {
   const timeString = new Date(ticket.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   const isCritical = ticket.priority === 'critical' && ticket.status !== 'resolved';
   const { agentName } = useRealtimeStore();
+  const { compactMode } = useUiStore();
 
   const handleLockTicket = () => {
     if (ticket.isLocked) return;
@@ -41,7 +43,7 @@ export const TicketRow = ({ ticket }: TicketRowProps) => {
         isCritical && !isLockedByOther ? 'bg-red-50/20 hover:bg-red-50/40' : ''
       }`}
     >
-      <td className="px-5 py-3 whitespace-nowrap relative">
+      <td className={`${compactMode ? 'px-3 py-2' : 'px-5 py-3'} whitespace-nowrap relative`}>
         {/* Left critical indicator border */}
         {isCritical && (
           <div className="absolute left-0 top-0 bottom-0 w-1 bg-red-500 shadow-[2px_0_8px_rgba(239,68,68,0.4)]" />
@@ -56,7 +58,7 @@ export const TicketRow = ({ ticket }: TicketRowProps) => {
           </span>
         </div>
       </td>
-      <td className="px-5 py-3 whitespace-nowrap">
+      <td className={`${compactMode ? 'px-3 py-2' : 'px-5 py-3'} whitespace-nowrap`}>
         <div className="flex items-center">
           <div className="w-6 h-6 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center mr-2.5 group-hover:border-blue-200 transition-colors">
             <UserIcon className="w-3 h-3 text-slate-500 group-hover:text-blue-500 transition-colors" />
@@ -64,13 +66,13 @@ export const TicketRow = ({ ticket }: TicketRowProps) => {
           <span className="text-sm text-slate-700 font-medium">{ticket.customerName}</span>
         </div>
       </td>
-      <td className="px-5 py-3 whitespace-nowrap">
+      <td className={`${compactMode ? 'px-3 py-2' : 'px-5 py-3'} whitespace-nowrap`}>
         <span className="text-sm text-slate-600 font-medium">{ticket.issueType}</span>
       </td>
-      <td className="px-5 py-3 whitespace-nowrap">
+      <td className={`${compactMode ? 'px-3 py-2' : 'px-5 py-3'} whitespace-nowrap`}>
         <TicketStatusBadge priority={ticket.priority} />
       </td>
-      <td className="px-5 py-3 whitespace-nowrap">
+      <td className={`${compactMode ? 'px-3 py-2' : 'px-5 py-3'} whitespace-nowrap`}>
         <div className="flex items-center justify-end gap-3">
           <TicketStatusBadge status={ticket.status} />
           <div className="w-px h-4 bg-slate-200"></div>

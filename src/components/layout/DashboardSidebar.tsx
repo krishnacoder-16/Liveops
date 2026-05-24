@@ -50,10 +50,14 @@ export const DashboardSidebar = () => {
 
       <div className="p-4 border-t border-slate-900">
         <Link 
-          href="#"
-          className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sm font-medium hover:bg-slate-900/50 hover:text-slate-100"
+          href="/dashboard/settings"
+          className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sm font-medium ${
+            pathname === '/dashboard/settings' 
+              ? 'bg-slate-900 text-white' 
+              : 'hover:bg-slate-900/50 hover:text-slate-100'
+          }`}
         >
-          <SettingsIcon className="w-4 h-4 text-slate-500" />
+          <SettingsIcon className={`w-4 h-4 ${pathname === '/dashboard/settings' ? 'text-blue-500' : 'text-slate-500'}`} />
           Settings
         </Link>
       </div>
